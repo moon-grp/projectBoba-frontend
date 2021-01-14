@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!--  <div>
     <v-row justify="center" class="mt-4">
       <div style="width: 800px" class="tabswitch">
         <v-tabs v-model="tab" background-color="transparent" grow>
@@ -10,35 +11,71 @@
       </div>
     </v-row>
 
-    <v-row justify="end" class="mt-8">
-      <div>
-        <v-tabs-items v-model="tab">
-          <!--first tab-->
-          <v-tab-item class="tabdetail ">
-        <transcationComp />
-          </v-tab-item>
-          <v-tab-item class="tabdetail text-justify">
-            Agents can market their services to potential tenants and landlords
-            based on positive reviews from other users, as well as, their
-            performance. Agents can track all their mandates, landlords,
-            tenants, properties, and tenancy agreements within the platform,
-            without the need for a back-office or filing system. The platform
-            presents the agent for each property, as designated by the landlord,
-            so that prospective tenants can easily identify and communicate with
-            the authorized agent for each property.
-          </v-tab-item>
-          <v-tab-item class="tabdetail text-justify">
-            tenant can market their services to potential tenants and landlords
-            based on positive reviews from other users, as well as, their
-            performance. Agents can track all their mandates, landlords,
-            tenants, properties, and tenancy agreements within the platform,
-            without the need for a back-office or filing system. The platform
-            presents the agent for each property, as designated by the landlord,
-            so that prospective tenants can easily identify and communicate with
-            the authorized agent for each property.
-          </v-tab-item>
-        </v-tabs-items>
+    <div class="mt-8">
+      <v-tabs-items v-model="tab">
+        
+        <v-tab-item>
+          <v-row justify="center">
+            <v-card width="200" height="120" color="#DAE3F7" tile
+              ><div class="ml-4 mt-6 amtFmt" >Balance</div></v-card
+            >
+          </v-row>
+        </v-tab-item>
+        <v-tab-item class="tabdetail text-justify"> </v-tab-item>
+        <v-tab-item class="tabdetail text-justify"> </v-tab-item>
+      </v-tabs-items>
+    </div> -->
+
+    <v-row justify="start" class="mt-4">
+      <v-card width="300" height="150" color="#DAE3F7" elevation="5" tile>
+        <v-card-title class="amtFnt2"> Balance </v-card-title>
+
+        <v-card-subtitle>
+          <div class="mt-2 amtFnt">₦ 200000</div>
+        </v-card-subtitle>
+
+        <v-card-actions>
+          <v-btn class="text-capitalize ml-2" outlined color="#13274a">
+            fund wallet
+            <v-icon right> mdi-cash-plus </v-icon>
+          </v-btn>
+          <v-btn class="text-capitalize mx-auto" outlined color="#13274a"
+            >send cash
+            <v-icon right> mdi-account-cash </v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-row>
+    <v-row class="mt-6" justify="start">
+      <div class="text-capitalize amtFnt">
+        transactions
       </div>
+    </v-row>
+    <v-row class="mt-6">
+      <v-simple-table>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="text-left text-capitalize">#</th>
+              <th class="text-left text-capitalize">transaction type</th>
+               <th class="text-left text-capitalize">amount</th>
+              <th class="text-left text-capitalize">transaction reference</th>
+               <th class="text-left text-capitalize">other party</th>
+              <th class="text-left text-capitalize">date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in desserts" :key="item.name">
+              <td>{{ item.name }}</td>
+              <td>{{ item.calories }}</td>
+               <td>{{ item.name }}</td>
+              <td>{{ item.calories }}</td>
+               <td>{{ item.name }}</td>
+              <td>{{ item.calories }}</td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
     </v-row>
   </div>
 </template>
@@ -53,12 +90,57 @@ export default {
   data() {
     return {
       tab: null,
+      desserts: [
+        {
+          name: 'Frozen Yogurt',
+          calories: 159,
+        },
+        {
+          name: 'Ice cream sandwich',
+          calories: 237,
+        },
+        {
+          name: 'Eclair',
+          calories: 262,
+        },
+        {
+          name: 'Cupcake',
+          calories: 305,
+        },
+        {
+          name: 'Gingerbread',
+          calories: 356,
+        },
+        {
+          name: 'Jelly bean',
+          calories: 375,
+        },
+        {
+          name: 'Lollipop',
+          calories: 392,
+        },
+        {
+          name: 'Honeycomb',
+          calories: 408,
+        },
+        {
+          name: 'Donut',
+          calories: 452,
+        },
+        {
+          name: 'KitKat',
+          calories: 518,
+        },
+      ],
     }
   },
 }
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
 .tabswitch {
   border: 2px solid #c4c4c4;
   box-sizing: border-box;
@@ -71,5 +153,23 @@ export default {
   font-size: 32px;
   line-height: 48px;
   color: #01579b;
+}
+
+.brd {
+  border-radius: 25px;
+}
+
+.amtFnt {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  color: #3a3a3a;
+  font-weight: 300;
+}
+
+.amtFnt2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  color: #3a3a3a;
+  font-weight: 100;
 }
 </style>
