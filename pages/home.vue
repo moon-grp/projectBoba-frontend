@@ -35,7 +35,12 @@
         </v-card-subtitle>
 
         <v-card-actions>
-          <v-btn class="text-capitalize ml-2" outlined color="#13274a">
+          <v-btn
+            class="text-capitalize ml-2"
+            outlined
+            color="#13274a"
+            @click="openPaystack"
+          >
             fund wallet
             <v-icon right> mdi-cash-plus </v-icon>
           </v-btn>
@@ -47,9 +52,7 @@
       </v-card>
     </v-row>
     <v-row class="mt-6" justify="start">
-      <div class="text-capitalize amtFnt">
-        transactions
-      </div>
+      <div class="text-capitalize amtFnt">transactions</div>
     </v-row>
     <v-row class="mt-6">
       <v-simple-table>
@@ -58,9 +61,9 @@
             <tr>
               <th class="text-left text-capitalize">#</th>
               <th class="text-left text-capitalize">transaction type</th>
-               <th class="text-left text-capitalize">amount</th>
+              <th class="text-left text-capitalize">amount</th>
               <th class="text-left text-capitalize">transaction reference</th>
-               <th class="text-left text-capitalize">other party</th>
+              <th class="text-left text-capitalize">other party</th>
               <th class="text-left text-capitalize">date</th>
             </tr>
           </thead>
@@ -68,9 +71,9 @@
             <tr v-for="item in desserts" :key="item.name">
               <td>{{ item.name }}</td>
               <td>{{ item.calories }}</td>
-               <td>{{ item.name }}</td>
+              <td>{{ item.name }}</td>
               <td>{{ item.calories }}</td>
-               <td>{{ item.name }}</td>
+              <td>{{ item.name }}</td>
               <td>{{ item.calories }}</td>
             </tr>
           </tbody>
@@ -86,6 +89,11 @@ export default {
   layout: 'authpages',
   components: {
     transcationComp,
+  },
+  head() {
+    return {
+      script: [{ src: 'https://js.paystack.co/v1/inline.js' }],
+    }
   },
   data() {
     return {
@@ -133,6 +141,40 @@ export default {
         },
       ],
     }
+  },
+  methods: {
+    openPaystack() {
+      var handler = PaystackPop.setup({
+        key: key,
+        email: 'olumidemm@gmail.com',
+        amount: "400000",
+        ref: '' + Math.floor(Math.random() * 1000000000 + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+        metadata: {
+          custom_fields: [
+            {
+              display_name: 'Mobile Number',
+              variable_name: 'mobile_number',
+              value: '+2348012345678',
+            },
+          ],
+        },
+        callback: async function (response) {
+          //  alert('success. transaction ref is ' + response.reference);
+          axios
+            .post(
+              `https://mrkayenterprise.herokuapp.com/api/v1/user/payproduct`,
+              {}
+            )
+            .then((res) => {
+              console.log(res)
+            })
+
+          console.log(name)
+        },
+        onClose: function () {},
+      })
+      handler.openIframe()
+    },
   },
 }
 </script>
