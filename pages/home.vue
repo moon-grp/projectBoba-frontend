@@ -55,6 +55,7 @@
       <div class="text-capitalize amtFnt">transactions</div>
     </v-row>
     <v-row class="mt-6">
+      <div class="tbl">
       <v-simple-table>
         <template v-slot:default>
           <thead>
@@ -79,6 +80,7 @@
           </tbody>
         </template>
       </v-simple-table>
+      </div>
     </v-row>
   </div>
 </template>
@@ -213,5 +215,8 @@ export default {
   font-size: 15px;
   color: #3a3a3a;
   font-weight: 100;
+}
+.tbl{
+  width: 90vw;
 }
 </style>
