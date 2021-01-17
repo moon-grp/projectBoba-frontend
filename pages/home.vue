@@ -26,8 +26,8 @@
       </v-tabs-items>
     </div> -->
 
-    <v-row justify="start" class="mt-4">
-      <v-card width="300" height="150" color="#DAE3F7" elevation="5" tile>
+    <v-row justify="end" class="mt-4">
+      <v-card width="350" height="150" color="#DAE3F7" elevation="5" tile>
         <v-card-title class="amtFnt2"> Balance </v-card-title>
 
         <v-card-subtitle>
@@ -44,44 +44,79 @@
             fund wallet
             <v-icon right> mdi-cash-plus </v-icon>
           </v-btn>
-          <v-btn class="text-capitalize mx-auto" outlined color="#13274a"
+          <v-btn class="text-capitalize mx-auto"  @click="dialog = true" outlined color="#13274a"
             >send cash
             <v-icon right> mdi-account-cash </v-icon>
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-row>
-    <v-row class="mt-6" justify="start">
+    <v-row class="mt-12" justify="start">
       <div class="text-capitalize amtFnt">transactions</div>
     </v-row>
     <v-row class="mt-6">
       <div class="tbl">
-      <v-simple-table>
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th class="text-left text-capitalize">#</th>
-              <th class="text-left text-capitalize">transaction type</th>
-              <th class="text-left text-capitalize">amount</th>
-              <th class="text-left text-capitalize">transaction reference</th>
-              <th class="text-left text-capitalize">other party</th>
-              <th class="text-left text-capitalize">date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in desserts" :key="item.name">
-              <td>{{ item.name }}</td>
-              <td>{{ item.calories }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.calories }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.calories }}</td>
-            </tr>
-          </tbody>
-        </template>
-      </v-simple-table>
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left text-capitalize">#</th>
+                <th class="text-left text-capitalize">transaction type</th>
+                <th class="text-left text-capitalize">amount</th>
+                <th class="text-left text-capitalize">transaction reference</th>
+                <th class="text-left text-capitalize">other party</th>
+                <th class="text-left text-capitalize">date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in desserts" :key="item.name">
+                <td>{{ item.name }}</td>
+                <td>{{ item.calories }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.calories }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.calories }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
       </div>
     </v-row>
+
+    <v-dialog persistent max-width="300px" v-model="dialog">
+      <v-card>
+       
+        <v-card-title>
+          <span class="headline">Send cash</span>
+        </v-card-title>
+        <v-card-text class="mt-4">
+          <v-container>
+            <v-row>
+              <v-text-field
+                label="Username"
+                outlined
+                color="#13274a"
+                prefix="@"
+              ></v-text-field>
+              <v-text-field
+                label="Amount"
+                outlined
+                color="#13274a"
+                prefix="₦"
+              ></v-text-field>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions class="pb-4">
+          <v-btn class="text-capitalize ml-2" outlined color="#13274a"
+            >send cash
+          </v-btn>
+            <v-btn  @click="dialog = false" class="text-capitalize mx-auto" outlined color="#13274a"
+            >cancel 
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -100,6 +135,7 @@ export default {
   data() {
     return {
       tab: null,
+      dialog: true,
       desserts: [
         {
           name: 'Frozen Yogurt',
@@ -149,7 +185,7 @@ export default {
       var handler = PaystackPop.setup({
         key: key,
         email: 'olumidemm@gmail.com',
-        amount: "400000",
+        amount: '400000',
         ref: '' + Math.floor(Math.random() * 1000000000 + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
         metadata: {
           custom_fields: [
@@ -216,7 +252,7 @@ export default {
   color: #3a3a3a;
   font-weight: 100;
 }
-.tbl{
+.tbl {
   width: 90vw;
 }
 </style>
