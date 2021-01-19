@@ -4,7 +4,7 @@
       <v-col cols="6" md="6" sm="12">
         <div id="boxSpace">
           <div class="trs fnt mb-5">
-            join the <span class="coll">wish-list.</span>
+            join the <span class="coll">Boba..</span>
           </div>
 
           <v-row>
@@ -12,10 +12,10 @@
               <div>
                 <v-text-field
                   outlined
-                  label="Name"
+                  label="Username"
                   prepend-inner-icon="mdi-account"
                   class="text-capitalize tf"
-                  color="#6C63FF"
+                  color="#13274a"
                   v-model="name"
                   :error-messages="nameError"
                   @input="$v.name.$touch()"
@@ -27,7 +27,7 @@
                   label="Email"
                   prepend-inner-icon="mdi-email-outline"
                   class="text-capitalize tf"
-                  color="#6C63FF"
+                  color="#13274a"
                   v-model="email"
                   :error-messages="emailErrors"
                   @input="$v.email.$touch()"
@@ -39,7 +39,7 @@
                   label="Password"
                   prepend-inner-icon="mdi-key"
                   class="text-capitalize tf"
-                  color="#6C63FF"
+                  color="#13274a"
                   v-model="password"
                   :error-messages="passwordErros"
                   @input="$v.password.$touch()"
@@ -47,7 +47,7 @@
                 ></v-text-field>
               </div>
               <v-btn
-                color="#6C63FF"
+                color="#13274a"
                 class="fnt-p trs"
                 outlined
                 dark
@@ -86,7 +86,7 @@ import { required, minLength, email, sameAs } from 'vuelidate/lib/validators'
 import Lottie from 'vue-lottie/src/lottie.vue'
 import * as animationData from '~/assets/ani1.json'
 export default {
-  layout: 'authpages',
+  layout: 'reg',
   mixins: [validationMixin],
 
   validations: {
@@ -122,17 +122,20 @@ export default {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         try {
-          let res = await this.$store.dispatch('signUp', {
-            name: this.name,
-            email: this.email,
-            password: this.password,
-          })
-          this.msg = res.data.message
+          const res = await this.$axios.$post(
+            'https://project-boba-be.herokuapp.com/api/v1/signup',
+            {
+              username: this.name,
+              email: this.email,
+              password: this.password,
+            }
+          )
           console.log(res)
-          localStorage.setItem('token', JSON.stringify(res.data.token))
+          this.msg = res.message
+          localStorage.setItem('token', JSON.stringify(res.token))
           this.snackbar = true
           this.loading = false
-          this.$router.push({ name: 'wish' })
+          this.$router.push({ name: 'home' })
         } catch (error) {
           console.log(error.response)
           this.msg = error.response.data
@@ -196,7 +199,7 @@ export default {
 }
 
 .coll {
-  color: #6c63ff;
+  color: #13274a;
   font-size: 50px;
 }
 </style>

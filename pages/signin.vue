@@ -75,7 +75,7 @@ import { required, minLength, email, sameAs } from 'vuelidate/lib/validators'
 import Lottie from 'vue-lottie/src/lottie.vue'
 import * as animationData from '~/assets/ani2.json'
 export default {
-  layout: 'authpages',
+  layout: 'reg',
   mixins: [validationMixin],
 
   validations: {
@@ -109,7 +109,7 @@ export default {
         this.loading = true
         try {
           const res = await this.$axios.$post(
-            'https://thewishlist.herokuapp.com/api/v1/signin',
+            'https://project-boba-be.herokuapp.com/api/v1/signin',
             {
               email: this.email,
               password: this.password,
@@ -119,7 +119,7 @@ export default {
           localStorage.setItem('token', JSON.stringify(res.token))
           this.msg = res.message
           this.snackbar = true
-          this.$router.push({ name: 'wish' })
+          this.$router.push({ name: 'home' })
           this.loading = false
         } catch (error) {
           console.log(error.response)
