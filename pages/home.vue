@@ -135,7 +135,7 @@ export default {
   data() {
     return {
       tab: null,
-      dialog: true,
+      dialog: false,
       desserts: [
         {
           name: 'Frozen Yogurt',
@@ -182,6 +182,7 @@ export default {
   },
   methods: {
     openPaystack() {
+       var key = process.env.pAPI_KEY
       var handler = PaystackPop.setup({
         key: key,
         email: 'olumidemm@gmail.com',
