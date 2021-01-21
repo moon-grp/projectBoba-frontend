@@ -31,7 +31,7 @@
         <v-card-title class="amtFnt2"> Balance </v-card-title>
 
         <v-card-subtitle>
-          <div class="mt-2 amtFnt">₦ 200000</div>
+          <div class="mt-2 amtFnt">₦ {{ balance }}</div>
         </v-card-subtitle>
 
         <v-card-actions>
@@ -39,12 +39,16 @@
             class="text-capitalize ml-2"
             outlined
             color="#13274a"
-            @click="openPaystack"
+            @click="dialog2 = true"
           >
             fund wallet
             <v-icon right> mdi-cash-plus </v-icon>
           </v-btn>
-          <v-btn class="text-capitalize mx-auto"  @click="dialog = true" outlined color="#13274a"
+          <v-btn
+            class="text-capitalize mx-auto"
+            @click="dialog = true"
+            outlined
+            color="#13274a"
             >send cash
             <v-icon right> mdi-account-cash </v-icon>
           </v-btn>
@@ -56,7 +60,10 @@
     </v-row>
     <v-row class="mt-6">
       <div class="tbl">
-        <v-simple-table>
+        <v-row justify="center" class="mt-6 text--disabled">
+          <div>No transactions yet..</div>
+        </v-row>
+        <v-simple-table v-if="isTransactions">
           <template v-slot:default>
             <thead>
               <tr>
@@ -85,7 +92,6 @@
 
     <v-dialog persistent max-width="300px" v-model="dialog">
       <v-card>
-       
         <v-card-title>
           <span class="headline">Send cash</span>
         </v-card-title>
@@ -97,31 +103,92 @@
                 outlined
                 color="#13274a"
                 prefix="@"
+                v-model="username"
               ></v-text-field>
               <v-text-field
                 label="Amount"
                 outlined
                 color="#13274a"
                 prefix="₦"
+                v-model="amount"
+                type="number"
               ></v-text-field>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions class="pb-4">
-          <v-btn class="text-capitalize ml-2" outlined color="#13274a"
+          <v-btn
+            @click="sendCash"
+            class="text-capitalize ml-2"
+            outlined
+            color="#13274a"
             >send cash
           </v-btn>
-            <v-btn  @click="dialog = false" class="text-capitalize mx-auto" outlined color="#13274a"
-            >cancel 
+          <v-btn
+            @click="dialog = false"
+            class="text-capitalize mx-auto"
+            outlined
+            color="#13274a"
+            >cancel
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog persistent max-width="300px" v-model="dialog2">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Deposit to wallet</span>
+        </v-card-title>
+        <v-card-text class="mt-4">
+          <v-container>
+            <v-row>
+              <v-text-field
+                label="Amount"
+                outlined
+                type="number"
+                color="#13274a"
+                prefix="₦"
+                v-model="depositAmount"
+                :error-messages="depositAmountError"
+                @input="$v.depositAmount.$touch()"
+                @blur="$v.depositAmount.$touch()"
+              ></v-text-field>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions class="pb-4">
+          <v-btn
+            @click="openPaystack"
+            class="text-capitalize ml-2"
+            outlined
+            color="#13274a"
+            >deposit cash
+          </v-btn>
+          <v-btn
+            @click="dialog2 = false"
+            class="text-capitalize ml-2"
+            outlined
+            color="#13274a"
+            >cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-snackbar v-model="snackbar" :timeout="timeout" color="success">
+      {{ msg }}
+    </v-snackbar>
+    <v-snackbar v-model="snackbarErr" :timeout="timeout" color="error">
+      {{ msg }}
+    </v-snackbar>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import transcationComp from '~/components/transactions.vue'
+import { validationMixin } from 'vuelidate'
+import { required, minLength, email, sameAs } from 'vuelidate/lib/validators'
 export default {
   layout: 'authpages',
   components: {
@@ -132,10 +199,26 @@ export default {
       script: [{ src: 'https://js.paystack.co/v1/inline.js' }],
     }
   },
+  mixins: [validationMixin],
+
+  validations: {
+    depositAmount: { required },
+  },
   data() {
     return {
+      timeout: 7000,
+      snackbar: '',
+      snackbarErr: '',
+      username: '',
+      amount: '',
+      msg: '',
+      depositAmount: '',
+      balance: '',
+      email: '',
+      isTransactions: false,
       tab: null,
       dialog: false,
+      dialog2: false,
       desserts: [
         {
           name: 'Frozen Yogurt',
@@ -180,13 +263,63 @@ export default {
       ],
     }
   },
+  created() {
+    this.userDetails()
+  },
+  computed: {
+    depositAmountError() {
+      const errors = []
+      if (!this.$v.depositAmount.$dirty) return errors
+      !this.$v.depositAmount.required && errors.push('Amount is required')
+      return errors
+    },
+  },
   methods: {
+    async sendCash() {
+      try {
+        const res = await this.$axios.$post(
+          'https://project-boba-be.herokuapp.com/api/v1/user/sendcash',
+          {
+            username: this.username,
+            amount: parseInt(this.amount),
+          }
+        )
+        console.log(res)
+        this.msg = res
+        this.snackbar = true
+      } catch (error) {
+        console.log(error.response)
+        this.msg = error.response.data
+        this.snackbarErr = true
+      }
+    },
+    async userDetails() {
+      try {
+        const res = await this.$axios.$get(
+          'https://project-boba-be.herokuapp.com/api/v1/user/getuser'
+        )
+        console.log(res)
+        this.balance = res.Balance
+        this.email = res.email
+        if (res.Transactions.length == 0) {
+          this.isTransactions = false
+        } else {
+          this.isTransactions = true
+        }
+      } catch (error) {
+        console.warn(error)
+      }
+    },
     openPaystack() {
-       var key = process.env.pAPI_KEY
+      const token = JSON.parse(localStorage.getItem('token'))
+      this.dialog2 = false
+      var key = process.env.pAPI_KEY
+      var amount = this.depositAmount
+      var email = this.email
       var handler = PaystackPop.setup({
         key: key,
-        email: 'olumidemm@gmail.com',
-        amount: '400000',
+        email: email,
+        amount: amount + '00',
         ref: '' + Math.floor(Math.random() * 1000000000 + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
         metadata: {
           custom_fields: [
@@ -201,8 +334,17 @@ export default {
           //  alert('success. transaction ref is ' + response.reference);
           axios
             .post(
-              `https://mrkayenterprise.herokuapp.com/api/v1/user/payproduct`,
-              {}
+              `https://project-boba-be.herokuapp.com/api/v1/user/fundwallet`,
+              {
+                referenceCode: response.reference,
+                email: email,
+                depositAmount: amount,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
             )
             .then((res) => {
               console.log(res)

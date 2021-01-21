@@ -4,7 +4,7 @@
       <v-col cols="6" md="6" sm="12">
         <div id="boxSpace">
           <div class="trs fnt mb-5">
-            sign in to your <span class="coll">wish-list.</span>
+            sign in to your <span class="coll">Boba.</span>
           </div>
 
           <v-row>
@@ -79,7 +79,7 @@ export default {
   mixins: [validationMixin],
 
   validations: {
-    password: { required, minLength: minLength(8) },
+    password: { required, minLength: minLength(1) },
 
     email: { required, email },
   },
@@ -117,6 +117,7 @@ export default {
           )
           console.log(res)
           localStorage.setItem('token', JSON.stringify(res.token))
+         
           this.msg = res.message
           this.snackbar = true
           this.$router.push({ name: 'home' })

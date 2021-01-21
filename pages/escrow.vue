@@ -19,31 +19,41 @@
                   label="Title of escrow"
                   outlined
                   color="#13274a"
+                  v-model="esTitle"
                 ></v-text-field>
                 <v-text-field
                   label="Escrow Condition(s)"
                   outlined
                   color="#13274a"
+                  v-model="esCondition"
                 ></v-text-field>
                 <v-text-field
                   label="Escrow value"
                   outlined
                   color="#13274a"
                   prefix="$"
+                  type="number"
+                  v-model="esValue"
                 ></v-text-field>
                 <v-text-field
                   label="escrow expire date"
                   outlined
                   color="#13274a"
+                  v-model="esEx"
                 ></v-text-field>
                 <v-text-field
                   label="Username"
                   outlined
                   color="#13274a"
                   prefix="@"
+                  v-model="esGuest"
                 ></v-text-field>
                 <v-card-actions>
-                  <v-btn class="text-capitalize " outlined color="#13274a"
+                  <v-btn
+                    @click="createEs"
+                    class="text-capitalize"
+                    outlined
+                    color="#13274a"
                     >create escrow
                   </v-btn>
                 </v-card-actions>
@@ -52,16 +62,50 @@
           </v-container>
         </v-tab-item>
         <v-tab-item class="tabdetail text-justify">
-             <v-text-field
-                  label="Escrow Id.."
-                  outlined
-                  color="#13274a"
-                ></v-text-field>
-            
-            
-             </v-tab-item>
+          <v-text-field
+            label="Escrow Id.."
+            outlined
+            color="#13274a"
+            v-model="esId"
+            append-icon="mdi-map-marker"
+            @click:append="getEscrowDetails"
+          ></v-text-field>
+
+          <v-card class="mx-auto" max-width="600" outlined>
+            <v-list-item three-line>
+              <v-list-item-content>
+                <div
+                  class="text-capitalize headline mb-4 text-decoration-underline"
+                >
+                  {{ Title }}
+                </div>
+                <v-list-item-title class="text-capitalize overline mb-1">
+                  {{ Condition }}
+                </v-list-item-title>
+                <v-list-item-subtitle class="text-capitalize">{{
+                  duration
+                }}</v-list-item-subtitle>
+                 <v-list-item-subtitle class="text-capitalize">{{
+                  value
+                }}</v-list-item-subtitle>
+                
+              </v-list-item-content>
+            </v-list-item>
+
+
+            <v-card-actions>
+              <v-btn outlined rounded text> Button </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-tab-item>
       </v-tabs-items>
     </div>
+    <v-snackbar v-model="snackbar" :timeout="timeout" color="success">
+      {{ msg }}
+    </v-snackbar>
+    <v-snackbar v-model="snackbarErr" :timeout="timeout" color="error">
+      {{ msg }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -79,8 +123,23 @@ export default {
   },
   data() {
     return {
+      value:'',
+      Title: '',
+      Condition: '',
+      duration: '',
+      esId: '',
+      msg: '',
+      snackbar: false,
+      snackbarErr: false,
+      timeout: 7000,
       tab: null,
       dialog: true,
+      esGuest: '',
+      esEx: '',
+      esValue: '',
+      esCondition: '',
+      esTitle: '',
+      getEscrowId: '',
       desserts: [
         {
           name: 'Frozen Yogurt',
@@ -126,37 +185,47 @@ export default {
     }
   },
   methods: {
-    openPaystack() {
-      var handler = PaystackPop.setup({
-        key: key,
-        email: 'olumidemm@gmail.com',
-        amount: '400000',
-        ref: '' + Math.floor(Math.random() * 1000000000 + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
-        metadata: {
-          custom_fields: [
-            {
-              display_name: 'Mobile Number',
-              variable_name: 'mobile_number',
-              value: '+2348012345678',
-            },
-          ],
-        },
-        callback: async function (response) {
-          //  alert('success. transaction ref is ' + response.reference);
-          axios
-            .post(
-              `https://mrkayenterprise.herokuapp.com/api/v1/user/payproduct`,
-              {}
-            )
-            .then((res) => {
-              console.log(res)
-            })
-
-          console.log(name)
-        },
-        onClose: function () {},
-      })
-      handler.openIframe()
+    a() {
+      alert('sfggs')
+    },
+    async getEscrowDetails() {
+      try {
+        const res = await this.$axios.$get(
+          `https://project-boba-be.herokuapp.com/api/v1/user/viewescrow/${this.esId}`
+        )
+        console.log(res)
+        this.Title = res.escrowTitle
+        this.Condition = res.escrowCondition
+        this.duration = res.escrowDuration
+        this.value = res.escrowValue
+        this.msg = res
+        this.snackbar = true
+      } catch (error) {
+        console.log(error)
+        this.msg = error.response.data
+        this.snackbarErr = true
+      }
+    },
+    async createEs() {
+      try {
+        const res = await this.$axios.$post(
+          'https://project-boba-be.herokuapp.com/api/v1/user/createescrow',
+          {
+            guest: this.esGuest,
+            escrowValue: parseInt(this.esValue),
+            escrowTitle: this.esTitle,
+            escrowCondition: this.esCondition,
+            escrowDuration: this.esEx,
+          }
+        )
+        console.log(res)
+        this.msg = res
+        this.snackbar = true
+      } catch (error) {
+        console.log(error)
+        this.msg = error.response.data
+        this.snackbarErr = true
+      }
     },
   },
 }
